@@ -17,6 +17,8 @@ import com.frank.bibliaapi.dto.MessageResponseDto;
 import com.frank.bibliaapi.model.Favorito;
 import com.frank.bibliaapi.services.FavoritoService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/v1/favoritos")
 public class FavoritoController {
@@ -36,11 +38,12 @@ public class FavoritoController {
         List<Favorito> favoritos = favoritoService.obtenerFavoritosPorUsuario(userId);
         return ResponseEntity.ok(favoritos);
     }
+
     // Agregar un versículo a favoritos
     @PostMapping
     public ResponseEntity<MessageResponseDto> agregarFavorito(
             @RequestHeader("X-User-Id") String userId,
-            @RequestBody FavoritoRequestDto request) {
+            @Valid @RequestBody FavoritoRequestDto request) { // <-- ¡Aquí agregamos @Valid!
         MessageResponseDto respuesta = favoritoService.agregarFavorito(userId, request);
         return ResponseEntity.ok(respuesta);
     }

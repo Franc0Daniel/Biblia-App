@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.frank.bibliaapi.dto.MessageResponseDto;
 import com.frank.bibliaapi.dto.NotaRequestDto;
+import com.frank.bibliaapi.exception.ResourceNotFoundException;
 import com.frank.bibliaapi.model.Nota;
 import com.frank.bibliaapi.repository.NotaRepository;
 import com.frank.bibliaapi.services.NotaService;
@@ -33,11 +34,14 @@ public class NotaServiceImpl implements NotaService {
 
     @Override
     public MessageResponseDto actualizarNota(String userId, Long id, NotaRequestDto request) {
+        // Validación con nuestra excepción 404 personalizada si no existe
         Nota nota = notaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Nota no encontrada"));
-        
+                .orElseThrow(() -> new ResourceNotFoundException("La nota solicitada no existe o fue eliminada."));
+
+        // Validación de seguridad por si el usuario no es dueño de la nota
         if (!nota.getUserId().equals(userId)) {
-            return new MessageResponseDto("No tienes permiso para modificar esta nota.");
+            throw new ResourceNotFoundException("No tienes permiso para modificar esta nota."); 
+            // O bien puedes crear una excepción UnauthorizedException si prefieres un 403
         }
 
         nota.setContenido(request.getContenido());
@@ -47,6 +51,11 @@ public class NotaServiceImpl implements NotaService {
 
     @Override
     public MessageResponseDto eliminarNota(String userId, Long id) {
+        // Validamos que exista antes de borrar para disparar el 404 si ya no está
+        if (!notaRepository.existsById(id)) {
+            throw new ResourceNotFoundException("La nota solicitada no existe o fue eliminada.");
+        }
+
         notaRepository.deleteById(id);
         return new MessageResponseDto("Nota eliminada correctamente.");
     }

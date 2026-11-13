@@ -18,6 +18,8 @@ import com.frank.bibliaapi.dto.NotaRequestDto;
 import com.frank.bibliaapi.model.Nota;
 import com.frank.bibliaapi.services.NotaService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/v1/notas")
 public class NotaController {
@@ -36,10 +38,11 @@ public class NotaController {
         List<Nota> notas = notaService.obtenerNotasPorUsuario(userId);
         return ResponseEntity.ok(notas);
     }
+
     @PostMapping
     public ResponseEntity<MessageResponseDto> agregarNota(
             @RequestHeader("X-User-Id") String userId,
-            @RequestBody NotaRequestDto request) {
+            @Valid @RequestBody NotaRequestDto request) {
         MessageResponseDto respuesta = notaService.agregarNota(userId, request);
         return ResponseEntity.ok(respuesta);
     }
@@ -48,7 +51,7 @@ public class NotaController {
     public ResponseEntity<MessageResponseDto> actualizarNota(
             @RequestHeader("X-User-Id") String userId,
             @PathVariable Long id,
-            @RequestBody NotaRequestDto request) {
+            @Valid @RequestBody NotaRequestDto request) {
         MessageResponseDto respuesta = notaService.actualizarNota(userId, id, request);
         return ResponseEntity.ok(respuesta);
     }

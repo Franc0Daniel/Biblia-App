@@ -11,7 +11,7 @@ import com.frank.bibliaapi.model.Versiculo;
 import com.frank.bibliaapi.services.VersiculoService;
 
 @RestController
-@RequestMapping("/versiculos")
+@RequestMapping("/api/v1/versiculos")
 public class VersiculoController {
 
     private final VersiculoService versiculoService;
